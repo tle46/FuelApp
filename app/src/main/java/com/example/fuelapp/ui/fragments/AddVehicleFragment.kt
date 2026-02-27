@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment
 import com.example.fuelapp.MainActivity
 import com.example.fuelapp.R
 
-class VehicleListFragment : Fragment() {
+class AddVehicleFragment : Fragment() {
 
-    private val tag = "vehiclelistfragment"
+    private val tag = "addvehiclefragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,12 +22,12 @@ class VehicleListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         Log.d(tag, "onCreateView")
-        val view = inflater.inflate(R.layout.fragment_vehicle_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_vehicle, container, false)
 
-        val btnAddVehicle: Button = view.findViewById(R.id.btnAddVehicle)
-        btnAddVehicle.setOnClickListener {
-            Log.d(tag, "add vehicle button clicked")
-            (activity as MainActivity).switchFragment(AddVehicleFragment())
+        val btnAddFuel: Button = view.findViewById(R.id.btnSaveVehicle)
+        btnAddFuel.setOnClickListener {
+            Log.d(tag, "add fuel button clicked")
+            (activity as MainActivity).switchFragment(VehicleListFragment())
         }
 
         return view

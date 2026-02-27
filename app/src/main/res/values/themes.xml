@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.FuelApp" parent="Theme.AppCompat.Light.DarkActionBar" />
+    <style name="Theme.FuelApp" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
 </resources>

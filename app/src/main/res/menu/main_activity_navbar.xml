@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_add_log"
+        android:title="Add Log"
+        android:icon="@drawable/ic_add"/>
+
+    <item
+        android:id="@+id/nav_dashboard"
+        android:title="Dashboard"
+        android:icon="@drawable/ic_dashboard"/>
+
+    <item
+        android:id="@+id/nav_fuel_logs"
+        android:title="Fuel Logs"
+        android:icon="@drawable/ic_logs"/>
+</menu>
