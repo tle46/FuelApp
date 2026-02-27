@@ -1,47 +1,36 @@
 package com.example.fuelapp
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.fuelapp.ui.theme.FuelAppTheme
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.fuelapp.ui.fragments.VehicleListFragment
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private val tag = "mainactivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            FuelAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+        Log.d(tag, "onCreate")
+        setContentView(R.layout.activity_main)
+
+        // Load VehicleListFragment by default
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, VehicleListFragment())
+            .commit()
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onStart() { super.onStart(); Log.d(tag, "onStart") }
+    override fun onResume() { super.onResume(); Log.d(tag, "onResume") }
+    override fun onPause() { super.onPause(); Log.d(tag, "onPause") }
+    override fun onStop() { super.onStop(); Log.d(tag, "onStop") }
+    override fun onDestroy() { super.onDestroy(); Log.d(tag, "onDestroy") }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FuelAppTheme {
-        Greeting("Android")
+    fun switchFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
