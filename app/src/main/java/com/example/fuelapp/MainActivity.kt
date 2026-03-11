@@ -9,7 +9,6 @@ import com.example.fuelapp.ui.fragments.FuelLogFragment
 import com.example.fuelapp.ui.fragments.VehicleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-
 class MainActivity : AppCompatActivity() {
 
     private val tag = "mainactivity"
