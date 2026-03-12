@@ -10,459 +10,345 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Dashboard Title -->
         <TextView
+            style="@style/TitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Driving Dashboard"
-            android:textSize="24sp"
-            android:textStyle="bold"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="12dp"
-            android:padding="4dp"/>
+            android:text="Driving Dashboard"/>
 
-        <!-- Vehicle Selector -->
         <TextView
-            android:text="Select Vehicle"
-            android:textStyle="bold"
+            style="@style/CardTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"/>
+            android:text="Select Vehicle"/>
+
         <Spinner
             android:id="@+id/spinnerVehicle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Last MPG -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/DashboardCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="8dp"
-            android:padding="12dp">
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    style="@style/CardTitleText"
                     android:text="Latest MPG"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    style="@style/CardValueText"
                     android:id="@+id/txtLastMPG"
                     android:text="0 mpg"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Miles / Gallons in Past Month side my side -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="4dp">
 
-            <!-- Miles Past Month -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Miles in Past Month"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtMilesPastMonth"
                         android:text="0 mi"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Gallons Past Month -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginStart="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Gallons in Past Month"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtGallonsPastMonth"
                         android:text="0 gal"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Last MPG -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/DashboardCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="8dp"
-            android:padding="12dp">
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    style="@style/CardTitleText"
                     android:text="Total MPG"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    style="@style/CardValueText"
                     android:id="@+id/txtTotalMPG"
                     android:text="0 mpg"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-
-        <!-- Side by Side -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="4dp">
 
-            <!-- Total Miles Tracked -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="4dp"
-                        android:text="Total Miles Tracked"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtTotalMiles"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="4dp"
-                        android:text="0 mi"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Total Fuel Cost -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginStart="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
-                        android:text="Total Fuel Cost"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
+                        style="@style/CardTitleText"
+                        android:text="Total Miles Tracked"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
+                        android:id="@+id/txtTotalMiles"
+                        android:text="0 mi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/CardTitleText"
+                        android:text="Total Fuel Cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtTotalFuelCost"
                         android:text="$0"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Side by Side -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="4dp">
 
-            <!-- Total Gallons -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Total Gallons"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtTotalGallonsLogs"
                         android:text="0 gal"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Total Fuel Logs -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginStart="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Total Fuel Logs"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtTotalFuelLogs"
                         android:text="0"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- My Vehicle Title -->
         <TextView
+            style="@style/TitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="My Vehicle"
-            android:textSize="24sp"
-            android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="12dp"
-            android:padding="4dp"/>
+            android:text="My Vehicle"/>
 
-        <!-- Vehicle Name -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/DashboardCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="8dp"
-            android:padding="12dp">
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    style="@style/CardTitleText"
                     android:text="Name"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    style="@style/CardValueText"
                     android:id="@+id/txtVehicleName"
                     android:text="Jeff's Truck"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:padding="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-
-        <!-- Side by Side -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="3"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="4dp">
 
-            <!-- Year -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Year"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtYear"
                         android:text="2019"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Make -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Make"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtMake"
                         android:text="Ford"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- Model -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="4dp"
-                android:padding="12dp">
+                android:layout_weight="1">
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        style="@style/CardTitleText"
                         android:text="Model"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        style="@style/CardValueText"
                         android:id="@+id/txtModel"
                         android:text="F150"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:padding="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="8dp">
 
-            <!-- Side by side -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Card Styles -->
+    <style name="TitleText">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CardTitleText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="CardValueText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="DashboardCardBase">
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+
+    <style name="DashboardCard" parent="DashboardCardBase">
+        <item name="android:layout_marginBottom">2dp</item>
+    </style>
+
+    <style name="DashboardCardStart" parent="DashboardCardBase">
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">6dp</item>
+    </style>
+
+    <style name="DashboardCardEnd" parent="DashboardCardBase">
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginEnd">6dp</item>
+    </style>
+
+</resources>
