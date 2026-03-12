@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.fuelapp.ui.fragments.AddFuelLogFragment
+import android.view.View
 import com.example.fuelapp.ui.fragments.AddVehicleFragment
 import com.example.fuelapp.ui.fragments.FuelLogFragment
 import com.example.fuelapp.ui.fragments.VehicleListFragment
@@ -13,19 +15,24 @@ class MainActivity : AppCompatActivity() {
 
     private val tag = "mainactivity"
 
+    private lateinit var bottomNav: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(tag, "onCreate")
         setContentView(R.layout.activity_main)
 
+        bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        bottomNav.selectedItemId = R.id.nav_dashboard
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, VehicleListFragment())
             .commit()
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNav.setOnItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_add_log -> { switchFragment(AddVehicleFragment()); true }
+                R.id.nav_add_log -> { switchFragment(AddFuelLogFragment()); false }
                 R.id.nav_dashboard -> { switchFragment(VehicleListFragment()); true }
                 R.id.nav_fuel_logs -> { switchFragment(FuelLogFragment()); true }
                 else -> false
@@ -42,7 +49,14 @@ class MainActivity : AppCompatActivity() {
     fun switchFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
             .commit()
+    }
+
+    fun hideBottomNav() {
+        bottomNav.visibility = View.GONE
+    }
+
+    fun showBottomNav() {
+        bottomNav.visibility = View.VISIBLE
     }
 }

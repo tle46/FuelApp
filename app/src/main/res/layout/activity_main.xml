@@ -15,13 +15,22 @@
 
     </FrameLayout>
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#33000000"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/main_activity_navbar"
-        />
+        app:menu="@menu/main_activity_navbar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

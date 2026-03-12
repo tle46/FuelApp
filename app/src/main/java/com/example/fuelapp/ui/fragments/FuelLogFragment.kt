@@ -27,7 +27,7 @@ class FuelLogFragment : Fragment() {
         val btnAddFuel: Button = view.findViewById(R.id.btnAddFuel)
         btnAddFuel.setOnClickListener {
             Log.d(tag, "add fuel button clicked")
-            (activity as MainActivity).switchFragment(VehicleListFragment())
+            (activity as MainActivity).switchFragment(AddFuelLogFragment())
         }
 
         return view
