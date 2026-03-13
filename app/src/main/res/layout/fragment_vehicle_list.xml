@@ -244,27 +244,19 @@
             android:layout_marginBottom="12dp"
             android:text="My Vehicle"/>
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/DashboardCard"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Name"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etVehicleName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    style="@style/CardTitleText"
-                    android:text="Name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    style="@style/CardValueText"
-                    android:id="@+id/txtVehicleName"
-                    android:text="Jeff's Truck"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -273,74 +265,47 @@
             android:weightSum="3"
             android:layout_marginBottom="4dp">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/DashboardCardEnd"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <LinearLayout
-                    android:orientation="vertical"
+                android:layout_weight="1"
+                android:hint="Year"
+                app:boxBackgroundMode="outline">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etYear"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        style="@style/CardTitleText"
-                        android:text="Year"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        style="@style/CardValueText"
-                        android:id="@+id/txtYear"
-                        android:text="2019"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="wrap_content"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/DashboardCardEnd"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <LinearLayout
-                    android:orientation="vertical"
+                android:layout_weight="1"
+                android:hint="Make"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:boxBackgroundMode="outline">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etMake"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        style="@style/CardTitleText"
-                        android:text="Make"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        style="@style/CardValueText"
-                        android:id="@+id/txtMake"
-                        android:text="Ford"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/DashboardCard"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <LinearLayout
-                    android:orientation="vertical"
+                android:layout_weight="1"
+                android:hint="Model"
+                app:boxBackgroundMode="outline">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etModel"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        style="@style/CardTitleText"
-                        android:text="Model"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        style="@style/CardValueText"
-                        android:id="@+id/txtModel"
-                        android:text="F150"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -360,7 +325,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Edit Vehicle"
+                    android:text="Save Vehicle"
                     android:layout_marginEnd="8dp"/>
 
                 <Button
