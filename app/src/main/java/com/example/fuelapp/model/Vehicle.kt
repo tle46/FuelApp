@@ -1,9 +1,9 @@
 package com.example.fuelapp.model
 
 data class Vehicle(
-    val id: Int,
-    val name: String,
-    val year: Int,
-    val make: String,
-    val model: String
+    var id: Int = 0,
+    var name: String = "",
+    var year: Int = 0,
+    var make: String = "",
+    var model: String = ""
 )

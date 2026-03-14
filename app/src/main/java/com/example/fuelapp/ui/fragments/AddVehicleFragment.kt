@@ -10,9 +10,13 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.fuelapp.MainActivity
 import com.example.fuelapp.R
+import androidx.fragment.app.activityViewModels
+import com.example.fuelapp.model.Vehicle
+import com.example.fuelapp.viewmodel.VehicleListViewModel
 
 class AddVehicleFragment : Fragment() {
 
+    private val viewModel: VehicleListViewModel by activityViewModels()
     private val tag = "addvehiclefragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +38,7 @@ class AddVehicleFragment : Fragment() {
         val modelField = view.findViewById<EditText>(R.id.etModel)
 
         val btnAddFuel: Button = view.findViewById(R.id.btnSaveVehicle)
+
         btnAddFuel.setOnClickListener {
 
             val name = nameField.text.toString()
@@ -41,7 +46,19 @@ class AddVehicleFragment : Fragment() {
             val model = modelField.text.toString()
             val year = yearField.text.toString()
 
-            (activity as MainActivity).switchFragment(VehicleListFragment())
+            val vehicle = Vehicle(
+                id = System.currentTimeMillis().toInt(),
+                name = name,
+                year = year.toIntOrNull() ?: 0,
+                make = make,
+                model = model
+            )
+
+            val success = viewModel.addVehicle(vehicle)
+
+            if (success) {
+                (activity as MainActivity).switchFragment(VehicleListFragment())
+            }
         }
 
         return view

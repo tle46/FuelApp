@@ -3,14 +3,14 @@ package com.example.fuelapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fuelapp.data.FakeVehicleDatabase
 import com.example.fuelapp.model.Vehicle
+import com.example.fuelapp.data.VehicleRepository
 
 class VehicleListViewModel : ViewModel() {
 
     private val _vehicles = MutableLiveData<List<Vehicle>>(emptyList())
     val vehicles: LiveData<List<Vehicle>> = _vehicles
-
+    private val repository = VehicleRepository()
     private val _selectedVehicle = MutableLiveData<Vehicle?>()
     val selectedVehicle: LiveData<Vehicle?> = _selectedVehicle
 
@@ -20,7 +20,9 @@ class VehicleListViewModel : ViewModel() {
     }
 
     private fun loadVehicles() {
-        _vehicles.value = FakeVehicleDatabase.getVehicles()
+        repository.getVehicles { vehicleList ->
+            _vehicles.postValue(vehicleList)
+        }
     }
 
     fun updateVehicle(updatedVehicle: Vehicle): Boolean {
@@ -30,13 +32,13 @@ class VehicleListViewModel : ViewModel() {
             || updatedVehicle.model.isBlank())
             return false
 
-        FakeVehicleDatabase.updateVehicle(updatedVehicle)
+        repository.updateVehicle(updatedVehicle)
         loadVehicles()
         return true
     }
 
     fun deleteVehicle(vehicle: Vehicle): Boolean {
-        FakeVehicleDatabase.deleteVehicle(vehicle)
+        repository.deleteVehicle(vehicle)
         loadVehicles()
 
         if (_selectedVehicle.value?.id == vehicle.id) {
@@ -53,5 +55,18 @@ class VehicleListViewModel : ViewModel() {
 
     fun setVehicles(vehicleList: List<Vehicle>) {
         _vehicles.value = vehicleList
+    }
+
+    fun addVehicle(vehicle: Vehicle): Boolean {
+
+        if (vehicle.name.isBlank()
+            || vehicle.make.isBlank()
+            || vehicle.model.isBlank()) {
+            return false
+        }
+
+        repository.addVehicle(vehicle)
+        loadVehicles()
+        return true
     }
 }
