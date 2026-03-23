@@ -47,7 +47,6 @@ class AddVehicleFragment : Fragment() {
             val year = yearField.text.toString()
 
             val vehicle = Vehicle(
-                id = System.currentTimeMillis().toInt(),
                 name = name,
                 year = year.toIntOrNull() ?: 0,
                 make = make,

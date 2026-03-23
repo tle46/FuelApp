@@ -11,21 +11,28 @@ class VehicleRepository {
     fun getVehicles(onResult: (List<Vehicle>) -> Unit) {
         vehicleCollection.get().addOnSuccessListener { result ->
             val vehicles = result.documents.mapNotNull { doc ->
-                doc.toObject(Vehicle::class.java)
+                val vehicle = doc.toObject(Vehicle::class.java)
+                // Vehicle id match doc id
+                vehicle?.id = doc.id
+                vehicle
             }
             onResult(vehicles)
         }
     }
 
     fun addVehicle(vehicle: Vehicle) {
-        vehicleCollection.add(vehicle)
+        // Firestore generates the vehicle id
+        val docRef = vehicleCollection.document()
+        vehicle.id = docRef.id
+        // Set the document
+        docRef.set(vehicle)
     }
 
     fun updateVehicle(vehicle: Vehicle) {
-        vehicleCollection.document(vehicle.id.toString()).set(vehicle)
+        vehicleCollection.document(vehicle.id).set(vehicle)
     }
 
     fun deleteVehicle(vehicle: Vehicle) {
-        vehicleCollection.document(vehicle.id.toString()).delete()
+        vehicleCollection.document(vehicle.id).delete()
     }
 }

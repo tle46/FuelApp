@@ -1,7 +1,7 @@
 package com.example.fuelapp.model
 
 data class Vehicle(
-    var id: Int = 0,
+    var id: String = "",
     var name: String = "",
     var year: Int = 0,
     var make: String = "",
