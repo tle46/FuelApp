@@ -13,6 +13,7 @@ import com.example.fuelapp.R
 import androidx.fragment.app.activityViewModels
 import com.example.fuelapp.model.Vehicle
 import com.example.fuelapp.viewmodel.VehicleListViewModel
+import com.google.android.material.appbar.MaterialToolbar
 
 class AddVehicleFragment : Fragment() {
 
@@ -58,6 +59,20 @@ class AddVehicleFragment : Fragment() {
             if (success) {
                 (activity as MainActivity).switchFragment(VehicleListFragment())
             }
+        }
+
+        val topAppBar = view.findViewById<MaterialToolbar>(R.id.topAppBar)
+
+        topAppBar.setNavigationOnClickListener {
+            Log.d(tag, "Back button clicked")
+            (activity as MainActivity).switchFragment(VehicleListFragment())
+        }
+
+        val btnCancel = view.findViewById<Button>(R.id.btnCancelVehicle)
+
+        btnCancel.setOnClickListener {
+            Log.d(tag, "Cancel vehicle button clicked")
+            (activity as MainActivity).switchFragment(VehicleListFragment())
         }
 
         return view

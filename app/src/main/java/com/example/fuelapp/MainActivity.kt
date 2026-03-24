@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.fuelapp.ui.fragments.AddFuelLogFragment
 import android.view.View
-import com.example.fuelapp.ui.fragments.AddVehicleFragment
 import com.example.fuelapp.ui.fragments.FuelLogFragment
 import com.example.fuelapp.ui.fragments.VehicleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView

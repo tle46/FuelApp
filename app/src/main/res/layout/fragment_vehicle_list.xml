@@ -341,7 +341,7 @@
                 android:id="@+id/btnAddVehicle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add New Vehicle"/>
+                android:text="Add a New Vehicle"/>
 
         </LinearLayout>
     </LinearLayout>

@@ -1,76 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:text="Add Vehicle"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <include
+        android:id="@+id/topAppBar"
+        layout="@layout/go_back_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/etVehicleName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Vehicle Name"
-        android:inputType="textCapWords"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/etYear"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Year"
-        android:inputType="number"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/etVehicleName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:text="Add Vehicle"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/etMake"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Make"
-        android:inputType="textCapWords"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/etYear"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <EditText
+            android:id="@+id/etVehicleName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Vehicle Name"
+            android:inputType="textCapWords"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <EditText
-        android:id="@+id/etModel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Model"
-        android:inputType="textCapWords"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/etMake"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <EditText
+            android:id="@+id/etYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Year"
+            android:inputType="number"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etVehicleName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btnSaveVehicle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Add New Vehicle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etModel" />
+        <EditText
+            android:id="@+id/etMake"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Make"
+            android:inputType="textCapWords"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etYear"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/etModel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Model"
+            android:inputType="textCapWords"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etMake"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etModel"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnCancelVehicle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:backgroundTint="@color/error"/>
+
+            <Button
+                android:id="@+id/btnSaveVehicle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Add Fuel Entry"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.fuelapp.MainActivity
 import com.example.fuelapp.R
+import com.google.android.material.appbar.MaterialToolbar
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,6 +19,7 @@ class AddFuelLogFragment : Fragment() {
     private lateinit var dateField: EditText
     private lateinit var btnAddFuel: Button
     private lateinit var btnCancelFuel: Button
+    private lateinit var topAppBar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class AddFuelLogFragment : Fragment() {
         dateField = view.findViewById(R.id.etFuelDate)
         btnAddFuel = view.findViewById(R.id.btnSaveFuel)
         btnCancelFuel = view.findViewById(R.id.btnCancelFuel)
+        topAppBar = view.findViewById<MaterialToolbar>(R.id.topAppBar)
 
         val today = Calendar.getInstance().time
         val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
@@ -51,6 +54,11 @@ class AddFuelLogFragment : Fragment() {
 
         btnCancelFuel.setOnClickListener {
             Log.d(tag, "Cancel Fuel button clicked")
+            (activity as MainActivity).switchFragment(VehicleListFragment())
+        }
+
+        topAppBar.setNavigationOnClickListener {
+            Log.d(tag, "Back button clicked")
             (activity as MainActivity).switchFragment(VehicleListFragment())
         }
 
