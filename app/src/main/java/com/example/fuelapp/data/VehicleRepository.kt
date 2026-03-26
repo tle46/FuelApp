@@ -2,6 +2,7 @@ package com.example.fuelapp.data
 
 import com.example.fuelapp.model.Vehicle
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.fuelapp.AuthManager
 
 class VehicleRepository {
 
@@ -9,22 +10,27 @@ class VehicleRepository {
     private val vehicleCollection = db.collection("vehicles")
 
     fun getVehicles(onResult: (List<Vehicle>) -> Unit) {
-        vehicleCollection.get().addOnSuccessListener { result ->
-            val vehicles = result.documents.mapNotNull { doc ->
-                val vehicle = doc.toObject(Vehicle::class.java)
-                // Vehicle id match doc id
-                vehicle?.id = doc.id
-                vehicle
+        val userId = AuthManager.getUserId()
+
+        vehicleCollection
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { result ->
+                val vehicles = result.documents.mapNotNull { doc ->
+                    val vehicle = doc.toObject(Vehicle::class.java)
+                    vehicle?.id = doc.id
+                    vehicle
+                }
+                onResult(vehicles)
             }
-            onResult(vehicles)
-        }
     }
 
     fun addVehicle(vehicle: Vehicle) {
-        // Firestore generates the vehicle id
         val docRef = vehicleCollection.document()
         vehicle.id = docRef.id
-        // Set the document
+
+        vehicle.userId = AuthManager.getUserId() ?: ""
+
         docRef.set(vehicle)
     }
 

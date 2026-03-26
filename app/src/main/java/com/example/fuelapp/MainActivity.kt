@@ -21,6 +21,14 @@ class MainActivity : AppCompatActivity() {
         Log.d(tag, "onCreate")
         setContentView(R.layout.activity_main)
 
+        AuthManager.signInAnonymously { userId ->
+            if (userId != null) {
+                println("User signed in: $userId")
+            } else {
+                println("Auth failed")
+            }
+        }
+
         bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
         bottomNav.selectedItemId = R.id.nav_dashboard

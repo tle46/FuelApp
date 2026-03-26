@@ -5,5 +5,6 @@ data class Vehicle(
     var name: String = "",
     var year: Int = 0,
     var make: String = "",
-    var model: String = ""
+    var model: String = "",
+    var userId: String = ""
 )
