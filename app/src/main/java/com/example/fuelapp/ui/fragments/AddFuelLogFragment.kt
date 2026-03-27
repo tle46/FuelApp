@@ -3,6 +3,10 @@ package com.example.fuelapp.ui.fragments
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +37,15 @@ class AddFuelLogFragment : Fragment() {
     private var selectedVehicle: String = ""
     private val calendar = Calendar.getInstance()
 
+    // Fuel field calculation variables
+    private var isUpdating = false
+    private val lastEditedFields: LinkedList<EditText> = LinkedList()
+    private lateinit var priceField: EditText
+    private lateinit var gallonsField: EditText
+    private lateinit var totalCostField: EditText
+    private val handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,22 +57,102 @@ class AddFuelLogFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_add_fuel_log, container, false)
 
+        // Initialize views
         dateField = view.findViewById(R.id.etFuelDate)
-        dateField.isFocusable = false
-        dateField.isClickable = true
         btnAddFuel = view.findViewById(R.id.btnSaveFuel)
         btnCancelFuel = view.findViewById(R.id.btnCancelFuel)
         topAppBar = view.findViewById(R.id.topAppBar)
         spinnerVehicle = view.findViewById(R.id.spinnerVehicle)
 
-        val priceField = view.findViewById<EditText>(R.id.etFuelPrice)
-        val gallonsField = view.findViewById<EditText>(R.id.etFuelAmount)
-        val totalCostField = view.findViewById<EditText>(R.id.etTotalCost)
+        priceField = view.findViewById(R.id.etFuelPrice)
+        gallonsField = view.findViewById(R.id.etFuelAmount)
+        totalCostField = view.findViewById(R.id.etTotalCost)
         val odometerField = view.findViewById<EditText>(R.id.etOdometer)
         val seekBar = view.findViewById<SeekBar>(R.id.seekBarFillPercent)
 
         seekBar.progress = 100
 
+        // Fuel field calculation logic
+        fun updateValues() {
+            if (isUpdating) return
+            isUpdating = true
+
+            val price = priceField.text.toString().toDoubleOrNull()
+            val gallons = gallonsField.text.toString().toDoubleOrNull()
+            val total = totalCostField.text.toString().toDoubleOrNull()
+
+            if (lastEditedFields.size < 2) {
+                isUpdating = false
+                return
+            }
+
+            val field1 = lastEditedFields[0]
+            val field2 = lastEditedFields[1]
+
+            // Determine the third field to calculate
+            val allFields = listOf(priceField, gallonsField, totalCostField)
+            val missingField = allFields.first { it != field1 && it != field2 }
+
+            // Calculate and fill missing field
+            when (missingField) {
+                priceField -> {
+                    if (gallons != null && total != null && gallons != 0.0) {
+                        val result = total / gallons
+                        priceField.setText(String.format("%.3f", result))
+                        priceField.setSelection(priceField.text.length)
+                    }
+                }
+                gallonsField -> {
+                    if (price != null && total != null && price != 0.0) {
+                        val result = total / price
+                        gallonsField.setText(String.format("%.3f", result))
+                        gallonsField.setSelection(gallonsField.text.length)
+                    }
+                }
+                totalCostField -> {
+                    if (price != null && gallons != null) {
+                        val result = price * gallons
+                        totalCostField.setText(String.format("%.2f", result))
+                        totalCostField.setSelection(totalCostField.text.length)
+                    }
+                }
+            }
+
+            isUpdating = false
+        }
+
+        fun scheduleUpdate() {
+            runnable?.let { handler.removeCallbacks(it) }
+            runnable = Runnable { updateValues() }
+            handler.postDelayed(runnable!!, 50)
+        }
+
+        // Watcher to watch price, gallons, totalCost text fields
+        val watcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val field = when {
+                    priceField.hasFocus() -> priceField
+                    gallonsField.hasFocus() -> gallonsField
+                    totalCostField.hasFocus() -> totalCostField
+                    else -> null
+                } ?: return
+
+                // Track the last 2 fields edited
+                lastEditedFields.remove(field)
+                lastEditedFields.add(field)
+                if (lastEditedFields.size > 2) lastEditedFields.removeFirst()
+
+                scheduleUpdate()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+        priceField.addTextChangedListener(watcher)
+        gallonsField.addTextChangedListener(watcher)
+        totalCostField.addTextChangedListener(watcher)
+
+        // Vehicle spinner logic
         vehicleViewModel.vehicles.observe(viewLifecycleOwner) { list ->
             vehicleList = list
             val names = vehicleList.map { it.name }
@@ -86,6 +179,7 @@ class AddFuelLogFragment : Fragment() {
             }
         }
 
+        // Date picker logic
         val formatter = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
         dateField.setText(formatter.format(calendar.time))
 
@@ -116,23 +210,16 @@ class AddFuelLogFragment : Fragment() {
             DatePickerDialog(requireContext(), dateListener, currentYear, currentMonth, currentDay).show()
         }
 
+        // Save button
         btnAddFuel.setOnClickListener {
-
-            val dateTimeString = dateField.text.toString()
-            val price = priceField.text.toString().toDoubleOrNull() ?: 0.0
-            val gallons = gallonsField.text.toString().toDoubleOrNull() ?: 0.0
-            val totalCost = totalCostField.text.toString().toDoubleOrNull() ?: 0.0
-            val odometer = odometerField.text.toString().toIntOrNull() ?: 0
-            val fillPercent = seekBar.progress
-
             val fuelLog = FuelLog(
                 vehicleId = selectedVehicle,
-                date = dateTimeString,
-                pricePerGallon = price,
-                gallons = gallons,
-                totalCost = totalCost,
-                odometer = odometer,
-                fillPercent = fillPercent
+                date = dateField.text.toString(),
+                pricePerGallon = priceField.text.toString().toDoubleOrNull() ?: 0.0,
+                gallons = gallonsField.text.toString().toDoubleOrNull() ?: 0.0,
+                totalCost = totalCostField.text.toString().toDoubleOrNull() ?: 0.0,
+                odometer = odometerField.text.toString().toIntOrNull() ?: 0,
+                fillPercent = seekBar.progress
             )
 
             val success = fuelViewModel.addFuelLog(fuelLog)
@@ -141,6 +228,7 @@ class AddFuelLogFragment : Fragment() {
             }
         }
 
+        // Cancel Button
         btnCancelFuel.setOnClickListener {
             (activity as MainActivity).switchFragment(VehicleListFragment())
         }
