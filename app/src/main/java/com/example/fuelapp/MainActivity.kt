@@ -21,28 +21,29 @@ class MainActivity : AppCompatActivity() {
         Log.d(tag, "onCreate")
         setContentView(R.layout.activity_main)
 
+        bottomNav = findViewById(R.id.bottomNavigationView)
+
         AuthManager.signInAnonymously { userId ->
             if (userId != null) {
-                println("User signed in: $userId")
+                Log.d("AUTH", "Signed in: $userId")
+
+                bottomNav.selectedItemId = R.id.nav_dashboard
+
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, VehicleListFragment())
+                    .commit()
+
+                bottomNav.setOnItemSelectedListener { item ->
+                    when(item.itemId) {
+                        R.id.nav_add_log -> { switchFragment(AddFuelLogFragment()); false }
+                        R.id.nav_dashboard -> { switchFragment(VehicleListFragment()); true }
+                        R.id.nav_fuel_logs -> { switchFragment(FuelListFragment()); true }
+                        else -> false
+                    }
+                }
+
             } else {
-                println("Auth failed")
-            }
-        }
-
-        bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-
-        bottomNav.selectedItemId = R.id.nav_dashboard
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, VehicleListFragment())
-            .commit()
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_add_log -> { switchFragment(AddFuelLogFragment()); false }
-                R.id.nav_dashboard -> { switchFragment(VehicleListFragment()); true }
-                R.id.nav_fuel_logs -> { switchFragment(FuelListFragment()); true }
-                else -> false
+                Log.e("AUTH", "Authentication failed")
             }
         }
     }
