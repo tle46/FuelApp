@@ -141,7 +141,7 @@
                 android:progressBackgroundTint="@color/secondary"
                 android:splitTrack="false"
                 android:layout_margin="16dp"
-                android:scaleY="2"/>
+                android:scaleY="1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
