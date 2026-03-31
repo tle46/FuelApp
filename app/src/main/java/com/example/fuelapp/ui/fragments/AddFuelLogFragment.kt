@@ -37,7 +37,6 @@ class AddFuelLogFragment : Fragment() {
     private var selectedVehicle: String = ""
     private val calendar = Calendar.getInstance()
 
-    // Fuel field calculation variables
     private var isUpdating = false
     private val lastEditedFields: LinkedList<EditText> = LinkedList()
     private lateinit var priceField: EditText
@@ -71,6 +70,20 @@ class AddFuelLogFragment : Fragment() {
         val seekBar = view.findViewById<SeekBar>(R.id.seekBarFillPercent)
 
         seekBar.progress = 100
+
+        priceField.setHint("0.000")
+        gallonsField.setHint("0.000")
+        totalCostField.setHint("0.00")
+        odometerField.setHint("000 000")
+
+        fun formatDecimal(value: String, decimals: Int): String {
+            val digits = value.replace(Regex("\\D"), "")
+            if (digits.isEmpty()) return ""
+            val padded = digits.padStart(decimals + 1, '0')
+            val integerPart = padded.dropLast(decimals)
+            val decimalPart = padded.takeLast(decimals)
+            return "${integerPart.toInt()}.$decimalPart"
+        }
 
         // Fuel field calculation logic
         fun updateValues() {
@@ -130,12 +143,28 @@ class AddFuelLogFragment : Fragment() {
         // Watcher to watch price, gallons, totalCost text fields
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                if (isUpdating) return
+
                 val field = when {
                     priceField.hasFocus() -> priceField
                     gallonsField.hasFocus() -> gallonsField
                     totalCostField.hasFocus() -> totalCostField
                     else -> null
                 } ?: return
+
+                isUpdating = true
+
+                val decimals = when (field) {
+                    totalCostField -> 2
+                    else -> 3
+                }
+
+                val formatted = formatDecimal(field.text.toString(), decimals)
+
+                field.setText(formatted)
+                field.setSelection(formatted.length)
+
+                isUpdating = false
 
                 // Track the last 2 fields edited
                 lastEditedFields.remove(field)
@@ -218,7 +247,7 @@ class AddFuelLogFragment : Fragment() {
                 pricePerGallon = priceField.text.toString().toDoubleOrNull() ?: 0.0,
                 gallons = gallonsField.text.toString().toDoubleOrNull() ?: 0.0,
                 totalCost = totalCostField.text.toString().toDoubleOrNull() ?: 0.0,
-                odometer = odometerField.text.toString().toIntOrNull() ?: 0,
+                odometer = odometerField.text.toString().replace(" ", "").toIntOrNull() ?: 0,
                 fillPercent = seekBar.progress
             )
 
@@ -236,6 +265,28 @@ class AddFuelLogFragment : Fragment() {
         topAppBar.setNavigationOnClickListener {
             (activity as MainActivity).switchFragment(VehicleListFragment())
         }
+
+        odometerField.addTextChangedListener(object : TextWatcher {
+            private var isEditing = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isEditing) return
+                isEditing = true
+
+                val raw = s.toString().replace(Regex("[^\\d]"), "")
+                val formattedInteger = if (raw.length > 3) {
+                    "${raw.substring(0, raw.length - 3)} ${raw.takeLast(3)}"
+                } else {
+                    raw
+                }
+
+                odometerField.setText(formattedInteger)
+                odometerField.setSelection(formattedInteger.length)
+
+                isEditing = false
+            }
+        })
 
         return view
     }
