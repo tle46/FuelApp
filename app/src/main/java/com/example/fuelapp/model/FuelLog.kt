@@ -1,12 +1,13 @@
 package com.example.fuelapp.model
 
 data class FuelLog(
-    val id: String = "",
-    val vehicleId: String,
-    val date: String,
-    val pricePerGallon: Double,
-    val gallons: Double,
-    val totalCost: Double,
-    val odometer: Int,
-    val fillPercent: Int = 100
+    var id: String = "",
+    var vehicleId: String = "",
+    var userId: String = "",
+    var date: String = "",
+    var pricePerGallon: Double = 0.0,
+    var gallons: Double = 0.0,
+    var totalCost: Double = 0.0,
+    var odometer: Int = 0,
+    var fillPercent: Int = 100
 )
