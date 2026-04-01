@@ -55,7 +55,10 @@ class FuelLogAdapter(
 
         val mpg = getMPG(log)
 
+        val previousLog = findPreviousLogForVehicle(log)
+        val miles = previousLog?.let { log.odometer - it.odometer } ?: 0
         holder.tvMiles.text = miles.toString()
+
         holder.tvGallons.text = "%.1f".format(log.gallons)
         holder.tvCost.text = "$%.2f".format(log.totalCost)
         holder.tvMpg.text = "%.1f".format(mpg)
