@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         //Check if user is logged in
         val user = FirebaseAuth.getInstance().currentUser
 
-        if (user == null || user.isAnonymous) {
+        if (user == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return

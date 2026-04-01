@@ -28,13 +28,16 @@ class LoginActivity : AppCompatActivity() {
 
         //Skip to anonymous login
         skipBtn.setOnClickListener {
-            auth.signInAnonymously().addOnCompleteListener {
-                if (it.isSuccessful) {
-                    startMain()
-                } else {
-                    Toast.makeText(this, "Anonymous auth failed", Toast.LENGTH_SHORT).show()
+            auth.signInAnonymously()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        //go to dashboard
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Anonymous auth failed", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
         }
 
         //Login existing user

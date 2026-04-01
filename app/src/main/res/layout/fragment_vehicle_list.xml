@@ -10,6 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp"/>
         <TextView
             style="@style/TitleText"
             android:layout_width="match_parent"
@@ -134,29 +142,6 @@
             android:orientation="horizontal"
             android:weightSum="2"
             android:layout_marginBottom="4dp">
-
-            <com.google.android.material.card.MaterialCardView
-                style="@style/DashboardCardEnd"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        style="@style/CardTitleText"
-                        android:text="Total Miles Tracked"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        style="@style/CardValueText"
-                        android:id="@+id/txtTotalMiles"
-                        android:text="0 mi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/DashboardCardStart"
@@ -344,5 +329,31 @@
                 android:text="Add a New Vehicle"/>
 
         </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/DashboardCardEnd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/CardTitleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Miles Tracked" />
+
+                <TextView
+                    android:id="@+id/txtTotalMiles"
+                    style="@style/CardValueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 mi" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </ScrollView>

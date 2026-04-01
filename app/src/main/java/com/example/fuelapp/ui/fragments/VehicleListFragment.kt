@@ -11,6 +11,10 @@ import com.example.fuelapp.model.Vehicle
 import com.example.fuelapp.R
 import com.example.fuelapp.viewmodel.VehicleListViewModel
 import com.google.android.material.textfield.TextInputEditText
+import android.content.Intent
+import android.widget.Button
+import com.google.firebase.auth.FirebaseAuth
+import com.example.fuelapp.LoginActivity
 
 class VehicleListFragment : Fragment() {
 
@@ -33,6 +37,7 @@ class VehicleListFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_vehicle_list, container, false)
 
+        val logoutButton = view.findViewById<Button>(R.id.logoutButton)
         spinnerVehicle = view.findViewById(R.id.spinnerVehicle)
         etVehicleName = view.findViewById(R.id.etVehicleName)
         etYear = view.findViewById(R.id.etYear)
@@ -41,6 +46,15 @@ class VehicleListFragment : Fragment() {
         btnEditVehicle = view.findViewById(R.id.btnEditVehicle)
         btnDeleteVehicle = view.findViewById(R.id.btnDeleteVehicle)
         btnAddVehicle = view.findViewById(R.id.btnAddVehicle)
+
+        // Logout button
+        logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
 
         // Add button
         btnAddVehicle.setOnClickListener {
