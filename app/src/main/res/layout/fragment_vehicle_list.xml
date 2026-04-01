@@ -144,6 +144,29 @@
             android:layout_marginBottom="4dp">
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/DashboardCardEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/CardTitleText"
+                        android:text="Total Miles Tracked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        style="@style/CardValueText"
+                        android:id="@+id/txtTotalMiles"
+                        android:text="0 mi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 style="@style/DashboardCardStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
