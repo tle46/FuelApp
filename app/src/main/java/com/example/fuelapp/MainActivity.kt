@@ -9,6 +9,8 @@ import android.view.View
 import com.example.fuelapp.ui.fragments.FuelListFragment
 import com.example.fuelapp.ui.fragments.VehicleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.content.Intent
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,27 +25,38 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav = findViewById(R.id.bottomNavigationView)
 
-        AuthManager.signInAnonymously { userId ->
-            if (userId != null) {
-                Log.d("AUTH", "Signed in: $userId")
+        //Check if user is logged in
+        val user = FirebaseAuth.getInstance().currentUser
 
-                bottomNav.selectedItemId = R.id.nav_dashboard
+        if (user == null || user.isAnonymous) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, VehicleListFragment())
-                    .commit()
+        //Initialize default fragment
+        bottomNav.selectedItemId = R.id.nav_dashboard
 
-                bottomNav.setOnItemSelectedListener { item ->
-                    when(item.itemId) {
-                        R.id.nav_add_log -> { switchFragment(AddFuelLogFragment()); false }
-                        R.id.nav_dashboard -> { switchFragment(VehicleListFragment()); true }
-                        R.id.nav_fuel_logs -> { switchFragment(FuelListFragment()); true }
-                        else -> false
-                    }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, VehicleListFragment())
+            .commit()
+
+        //Handle navigation
+        bottomNav.setOnItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.nav_add_log -> {
+                    switchFragment(AddFuelLogFragment())
+                    false
                 }
-
-            } else {
-                Log.e("AUTH", "Authentication failed")
+                R.id.nav_dashboard -> {
+                    switchFragment(VehicleListFragment())
+                    true
+                }
+                R.id.nav_fuel_logs -> {
+                    switchFragment(FuelListFragment())
+                    true
+                }
+                else -> false
             }
         }
     }
