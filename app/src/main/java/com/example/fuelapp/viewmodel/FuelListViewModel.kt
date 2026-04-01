@@ -23,7 +23,7 @@ class FuelListViewModel : ViewModel() {
             log.pricePerGallon <= 0.0 ||
             log.gallons <= 0.0 ||
             log.totalCost <= 0.0 ||
-            log.odometer <= 0
+            log.odometer < 0
         ) {
             return false
         }
