@@ -32,8 +32,13 @@ class FuelListFragment : Fragment(R.layout.fragment_fuel_list) {
             logs = emptyList(),
             vehicles = vehicleList
         ) { selectedLog ->
-            // handle click on fuel log
-            Bundle().apply { putString("fuelLogId", selectedLog.id) }
+            // Select the selected log
+            fuelViewModel.selectFuelLog(selectedLog)
+
+            // Navigate to the EditFuelLogFragment
+            (activity as? com.example.fuelapp.MainActivity)?.switchFragment(
+                EditFuelLogFragment()
+            )
         }
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

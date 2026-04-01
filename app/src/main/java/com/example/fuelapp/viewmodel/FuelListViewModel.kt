@@ -13,6 +13,8 @@ class FuelListViewModel : ViewModel() {
 
     private val _fuelLogs = MutableLiveData<List<FuelLog>>()
     val fuelLogs: LiveData<List<FuelLog>> get() = _fuelLogs
+    private val _selectedFuelLog = MutableLiveData<FuelLog?>()
+    val selectedFuelLog: LiveData<FuelLog?> get() = _selectedFuelLog
 
     private var currentVehicleId: String? = null
 
@@ -46,21 +48,23 @@ class FuelListViewModel : ViewModel() {
 
     // Not used yet
     fun deleteFuelLog(id: String) {
-        //repository.deleteFuelLogById(id)
+        repository.deleteFuelLogById(id)
         loadFuelLogs()
     }
 
     // Not used yet
     fun clearLogsByVehicle(vehicleId: String) {
-        //repository.clearByVehicleId(vehicleId)
+        repository.clearByVehicleId(vehicleId)
         loadFuelLogs()
     }
 
+    // Not used yet
     fun clearLogsByUser(vehicleId: String) {
-        //repository.clearByUserId(vehicleId)
+        repository.clearByUserId(vehicleId)
         loadFuelLogs()
     }
 
+    // Not used yet
     private fun loadFuelLogs(vehicleId: String) {
         currentVehicleId = vehicleId
 
@@ -75,4 +79,7 @@ class FuelListViewModel : ViewModel() {
         }
     }
 
+    fun selectFuelLog(log: FuelLog) {
+        _selectedFuelLog.value = log
+    }
 }

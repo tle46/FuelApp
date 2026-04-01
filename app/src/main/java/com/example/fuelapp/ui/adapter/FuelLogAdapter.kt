@@ -53,9 +53,7 @@ class FuelLogAdapter(
             "N/A"
         }
 
-        val previousLog = findPreviousLogForVehicle(log)
-        val miles = previousLog?.let { log.odometer - it.odometer } ?: 0
-        val mpg = if (miles > 0 && log.gallons > 0) miles.toDouble() / log.gallons else 0.0
+        val mpg = getMPG(log)
 
         holder.tvMiles.text = miles.toString()
         holder.tvGallons.text = "%.1f".format(log.gallons)
@@ -84,6 +82,13 @@ class FuelLogAdapter(
         vehicles = newVehicles
         vehicleNameMap = vehicles.associate { it.id to it.name }
         notifyDataSetChanged()
+    }
+
+    private fun getMPG(log: FuelLog):  Double{
+        val previousLog = findPreviousLogForVehicle(log)
+        val miles = previousLog?.let { log.odometer - it.odometer } ?: 0
+        val mpg = if (miles > 0 && log.gallons > 0) miles.toDouble() / log.gallons else 0.0
+        return mpg
     }
 
     // Gets previous fuel log for the same vehicle where ODOMETER MUST BE LOWER
