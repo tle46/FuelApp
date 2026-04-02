@@ -2,6 +2,7 @@ package com.example.fuelapp.ui.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,10 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.fuelapp.MainActivity
 import com.example.fuelapp.R
+import com.example.fuelapp.ScanActivity
 import com.example.fuelapp.model.FuelLog
 import com.example.fuelapp.model.Vehicle
 import com.example.fuelapp.viewmodel.FuelListViewModel
@@ -28,7 +32,6 @@ class AddFuelLogFragment : Fragment() {
     private val tag = "AddFuelLogFragment"
     private lateinit var dateField: EditText
     private lateinit var btnAddFuel: Button
-    private lateinit var btnCancelFuel: Button
     private lateinit var topAppBar: MaterialToolbar
     private lateinit var spinnerVehicle: Spinner
     private val fuelViewModel: FuelListViewModel by activityViewModels()
@@ -45,6 +48,25 @@ class AddFuelLogFragment : Fragment() {
     private val handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
 
+    private val scanPumpLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val data = result.data
+            val cost = data?.getDoubleExtra("cost", 0.00)
+            val gallons = data?.getDoubleExtra("gallons", 0.0000)
+
+            totalCostField.setText(String.format("%.2f", cost))
+            gallonsField.setText(String.format("%.3f", gallons))
+
+            lastEditedFields.clear()
+            lastEditedFields.add(gallonsField)
+            lastEditedFields.add(totalCostField)
+
+            updateValues()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,7 +81,6 @@ class AddFuelLogFragment : Fragment() {
         // Initialize views
         dateField = view.findViewById(R.id.etFuelDate)
         btnAddFuel = view.findViewById(R.id.btnSaveFuel)
-        btnCancelFuel = view.findViewById(R.id.btnCancelFuel)
         topAppBar = view.findViewById(R.id.topAppBar)
         spinnerVehicle = view.findViewById(R.id.spinnerVehicle)
 
@@ -76,68 +97,10 @@ class AddFuelLogFragment : Fragment() {
         totalCostField.setHint("0.00")
         odometerField.setHint("000 000")
 
-        fun formatDecimal(value: String, decimals: Int): String {
-            val digits = value.replace(Regex("\\D"), "")
-            if (digits.isEmpty()) return ""
-            val padded = digits.padStart(decimals + 1, '0')
-            val integerPart = padded.dropLast(decimals)
-            val decimalPart = padded.takeLast(decimals)
-            return "${integerPart.toInt()}.$decimalPart"
-        }
-
-        // Fuel field calculation logic
-        fun updateValues() {
-            if (isUpdating) return
-            isUpdating = true
-
-            val price = priceField.text.toString().toDoubleOrNull()
-            val gallons = gallonsField.text.toString().toDoubleOrNull()
-            val total = totalCostField.text.toString().toDoubleOrNull()
-
-            if (lastEditedFields.size < 2) {
-                isUpdating = false
-                return
-            }
-
-            val field1 = lastEditedFields[0]
-            val field2 = lastEditedFields[1]
-
-            // Determine the third field to calculate
-            val allFields = listOf(priceField, gallonsField, totalCostField)
-            val missingField = allFields.first { it != field1 && it != field2 }
-
-            // Calculate and fill missing field
-            when (missingField) {
-                priceField -> {
-                    if (gallons != null && total != null && gallons != 0.0) {
-                        val result = total / gallons
-                        priceField.setText(String.format("%.3f", result))
-                        priceField.setSelection(priceField.text.length)
-                    }
-                }
-                gallonsField -> {
-                    if (price != null && total != null && price != 0.0) {
-                        val result = total / price
-                        gallonsField.setText(String.format("%.3f", result))
-                        gallonsField.setSelection(gallonsField.text.length)
-                    }
-                }
-                totalCostField -> {
-                    if (price != null && gallons != null) {
-                        val result = price * gallons
-                        totalCostField.setText(String.format("%.2f", result))
-                        totalCostField.setSelection(totalCostField.text.length)
-                    }
-                }
-            }
-
-            isUpdating = false
-        }
-
-        fun scheduleUpdate() {
-            runnable?.let { handler.removeCallbacks(it) }
-            runnable = Runnable { updateValues() }
-            handler.postDelayed(runnable!!, 50)
+        val btnScanPump = view.findViewById<Button>(R.id.btnScanPump)
+        btnScanPump.setOnClickListener {
+            val intent = Intent(requireContext(), ScanActivity::class.java)
+            scanPumpLauncher.launch(intent)
         }
 
         // Watcher to watch price, gallons, totalCost text fields
@@ -257,11 +220,6 @@ class AddFuelLogFragment : Fragment() {
             }
         }
 
-        // Cancel Button
-        btnCancelFuel.setOnClickListener {
-            (activity as MainActivity).switchFragment(VehicleListFragment())
-        }
-
         topAppBar.setNavigationOnClickListener {
             (activity as MainActivity).switchFragment(VehicleListFragment())
         }
@@ -295,4 +253,70 @@ class AddFuelLogFragment : Fragment() {
         super.onDestroyView()
         (activity as MainActivity).showBottomNav()
     }
+
+
+    fun formatDecimal(value: String, decimals: Int): String {
+        val digits = value.replace(Regex("\\D"), "")
+        if (digits.isEmpty()) return ""
+        val padded = digits.padStart(decimals + 1, '0')
+        val integerPart = padded.dropLast(decimals)
+        val decimalPart = padded.takeLast(decimals)
+        return "${integerPart.toInt()}.$decimalPart"
+    }
+
+    // Fuel field calculation logic
+    fun updateValues() {
+        if (isUpdating) return
+        isUpdating = true
+
+        val price = priceField.text.toString().toDoubleOrNull()
+        val gallons = gallonsField.text.toString().toDoubleOrNull()
+        val total = totalCostField.text.toString().toDoubleOrNull()
+
+        if (lastEditedFields.size < 2) {
+            isUpdating = false
+            return
+        }
+
+        val field1 = lastEditedFields[0]
+        val field2 = lastEditedFields[1]
+
+        // Determine the third field to calculate
+        val allFields = listOf(priceField, gallonsField, totalCostField)
+        val missingField = allFields.first { it != field1 && it != field2 }
+
+        // Calculate and fill missing field
+        when (missingField) {
+            priceField -> {
+                if (gallons != null && total != null && gallons != 0.0) {
+                    val result = total / gallons
+                    priceField.setText(String.format("%.3f", result))
+                    priceField.setSelection(priceField.text.length)
+                }
+            }
+            gallonsField -> {
+                if (price != null && total != null && price != 0.0) {
+                    val result = total / price
+                    gallonsField.setText(String.format("%.3f", result))
+                    gallonsField.setSelection(gallonsField.text.length)
+                }
+            }
+            totalCostField -> {
+                if (price != null && gallons != null) {
+                    val result = price * gallons
+                    totalCostField.setText(String.format("%.2f", result))
+                    totalCostField.setSelection(totalCostField.text.length)
+                }
+            }
+        }
+
+        isUpdating = false
+    }
+
+    fun scheduleUpdate() {
+        runnable?.let { handler.removeCallbacks(it) }
+        runnable = Runnable { updateValues() }
+        handler.postDelayed(runnable!!, 50)
+    }
+
 }
