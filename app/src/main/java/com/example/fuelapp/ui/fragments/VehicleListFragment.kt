@@ -15,6 +15,7 @@ import android.content.Intent
 import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import com.example.fuelapp.LoginActivity
+import com.google.firebase.firestore.FirebaseFirestore
 
 class VehicleListFragment : Fragment() {
 
@@ -28,6 +29,11 @@ class VehicleListFragment : Fragment() {
     private lateinit var btnEditVehicle: Button
     private lateinit var btnDeleteVehicle: Button
     private lateinit var btnAddVehicle: Button
+    private lateinit var txtTotalMPG: TextView
+    private lateinit var txtTotalMiles: TextView
+    private lateinit var txtTotalFuelCost: TextView
+    private lateinit var txtTotalGallonsLogs: TextView
+    private lateinit var txtTotalFuelLogs: TextView
 
     private var vehicleList: List<Vehicle> = emptyList()
 
@@ -46,6 +52,11 @@ class VehicleListFragment : Fragment() {
         btnEditVehicle = view.findViewById(R.id.btnEditVehicle)
         btnDeleteVehicle = view.findViewById(R.id.btnDeleteVehicle)
         btnAddVehicle = view.findViewById(R.id.btnAddVehicle)
+        txtTotalMPG = view.findViewById(R.id.txtTotalMPG)
+        txtTotalMiles = view.findViewById(R.id.txtTotalMiles)
+        txtTotalFuelCost = view.findViewById(R.id.txtTotalFuelCost)
+        txtTotalGallonsLogs = view.findViewById(R.id.txtTotalGallonsLogs)
+        txtTotalFuelLogs = view.findViewById(R.id.txtTotalFuelLogs)
 
         // Logout button
         logoutButton.setOnClickListener {
@@ -101,9 +112,13 @@ class VehicleListFragment : Fragment() {
 
         // Observe selected vehicle and update form
         viewModel.selectedVehicle.observe(viewLifecycleOwner) { vehicle ->
-            // Vehicle can be null. Case is handled in updateFormUI
             updateFormUI(vehicle)
+
+            if (vehicle != null) {
+                loadStats(vehicle.id)
+            }
         }
+
 
         spinnerVehicle.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -159,5 +174,43 @@ class VehicleListFragment : Fragment() {
             btnEditVehicle.isEnabled = false
             btnDeleteVehicle.isEnabled = false
         }
+    }
+
+    private fun loadStats(vehicleId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        db.collection("fuelLogs")
+            .whereEqualTo("vehicleId", vehicleId)
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                var totalFuel = 0.0
+                var totalCost = 0.0
+                var minOdo = Double.MAX_VALUE
+                var maxOdo = 0.0
+
+                for (doc in documents) {
+                    val gallons = doc.getDouble("gallons") ?: 0.0
+                    val cost = doc.getDouble("totalCost") ?: 0.0
+                    val odo = doc.getDouble("odometer") ?: 0.0
+
+                    totalFuel += gallons
+                    totalCost += cost
+
+                    if (odo < minOdo) minOdo = odo
+                    if (odo > maxOdo) maxOdo = odo
+                }
+
+                val totalMiles = if (maxOdo > minOdo) maxOdo - minOdo else 0.0
+                val avgMpg = if (totalFuel > 0) totalMiles / totalFuel else 0.0
+
+                txtTotalMPG.text = getString(R.string.mpg_format, avgMpg)
+                txtTotalFuelCost.text = getString(R.string.fuel_cost_format, totalCost)
+                txtTotalGallonsLogs.text = getString(R.string.gallons_format, totalFuel)
+                txtTotalMiles.text = getString(R.string.miles_format, totalMiles)
+                txtTotalFuelLogs.text = documents.size().toString()
+            }
     }
 }

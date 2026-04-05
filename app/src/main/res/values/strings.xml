@@ -10,4 +10,8 @@
     <string name="hint_make">Make</string>
     <string name="hint_model">Model</string>
     <string name="btn_save_vehicle">Save Vehicle</string>
+    <string name="mpg_format">%.2f mpg</string>
+    <string name="fuel_cost_format">$%.2f</string>
+    <string name="gallons_format">%.1f gal</string>
+    <string name="miles_format">%.0f mi</string>
 </resources>
