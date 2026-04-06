@@ -120,6 +120,9 @@ class VehicleListFragment : Fragment() {
             }
         }
 
+        // Initially hide update form fields
+        updateFormUI(null)
+
         // Observe vehicles list and update the spinner
         viewModel.vehicles.observe(viewLifecycleOwner) { list ->
             vehicleList = list
@@ -175,20 +178,38 @@ class VehicleListFragment : Fragment() {
 
     private fun updateFormUI(vehicle: Vehicle?) {
         if (vehicle != null) {
-            etVehicleName.setText(vehicle.name)
-            etYear.setText(vehicle.year.toString())
-            etMake.setText(vehicle.make)
-            etModel.setText(vehicle.model)
-            btnEditVehicle.isEnabled = true
-            btnDeleteVehicle.isEnabled = true
+            etVehicleName.apply {
+                setText(vehicle.name)
+                visibility = View.VISIBLE
+            }
+            etYear.apply {
+                setText(vehicle.year.toString())
+                visibility = View.VISIBLE
+            }
+            etMake.apply {
+                setText(vehicle.make)
+                visibility = View.VISIBLE
+            }
+            etModel.apply {
+                setText(vehicle.model)
+                visibility = View.VISIBLE
+            }
+            btnEditVehicle.apply {
+                isEnabled = true
+                visibility = View.VISIBLE
+            }
+            btnDeleteVehicle.apply {
+                isEnabled = true
+                visibility = View.VISIBLE
+            }
         } else {
-            // Defaults when vehicle is null
-            etVehicleName.setText("")
-            etYear.setText("")
-            etMake.setText("")
-            etModel.setText("")
-            btnEditVehicle.isEnabled = false
-            btnDeleteVehicle.isEnabled = false
+            // Hide fields/buttons when vehicle is null
+            etVehicleName.visibility = View.GONE
+            etYear.visibility = View.GONE
+            etMake.visibility = View.GONE
+            etModel.visibility = View.GONE
+            btnEditVehicle.visibility = View.GONE
+            btnDeleteVehicle.visibility = View.GONE
         }
     }
 
