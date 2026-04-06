@@ -45,14 +45,18 @@ class LoginActivity : AppCompatActivity() {
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
 
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        startMain()
-                    } else {
-                        Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Email and password can not be empty", Toast.LENGTH_LONG).show()
+            } else {
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            startMain()
+                        } else {
+                            Toast.makeText(this, "Incorrect email and password", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
+            }
         }
 
         //Sign up OR link account
@@ -62,17 +66,19 @@ class LoginActivity : AppCompatActivity() {
 
             val user = auth.currentUser
 
-            if (user != null && user.isAnonymous) {
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Email and password can not be empty", Toast.LENGTH_LONG).show()
+            } else if (user != null && user.isAnonymous) {
                 //LINK anonymous to real account
                 val credential = EmailAuthProvider.getCredential(email, password)
 
                 user.linkWithCredential(credential)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Account created!", Toast.LENGTH_LONG).show()
                             startMain()
                         } else {
-                            Toast.makeText(this, "Linking failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Linking failed", Toast.LENGTH_LONG).show()
                         }
                     }
 
@@ -83,7 +89,7 @@ class LoginActivity : AppCompatActivity() {
                         if (it.isSuccessful) {
                             startMain()
                         } else {
-                            Toast.makeText(this, "Signup failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Signup failed. Please enter a valid email address and password.", Toast.LENGTH_LONG).show()
                         }
                     }
             }
