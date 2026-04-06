@@ -3,7 +3,6 @@ package com.example.fuelapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fuelapp.data.FakeFuelDatabase
 import com.example.fuelapp.model.FuelLog
 import com.example.fuelapp.data.FuelLogRepository
 
@@ -26,7 +25,6 @@ class FuelListViewModel : ViewModel() {
 
         if (
             log.vehicleId.isBlank() ||
-            log.date.isBlank() ||
             log.pricePerGallon < 0.0 ||
             log.gallons <= 0.0 ||
             log.totalCost < 0.0 ||

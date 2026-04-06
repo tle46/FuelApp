@@ -45,11 +45,10 @@ class FuelLogAdapter(
         holder.tvVehicleName.text = vehicleNameMap[log.vehicleId]
 
         holder.tvDate.text = try {
-            val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
             val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            inputFormat.parse(log.date)?.let { date -> outputFormat.format(date) } ?: "N/A"
+            outputFormat.format(log.date)
         } catch (e: Exception) {
-            Log.d("FuelLogAdapter", e.message ?: "Error parsing date")
+            Log.d("FuelLogAdapter", e.message ?: "Error formatting date")
             "N/A"
         }
 
@@ -69,15 +68,7 @@ class FuelLogAdapter(
     override fun getItemCount(): Int = logs.size
 
     fun updateLogs(newLogs: List<FuelLog>) {
-        val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
-        // Sort fuel log list by time descending
-        logs = newLogs.sortedByDescending { log ->
-            try {
-                inputFormat.parse(log.date)
-            } catch (e: Exception) {
-                Date(0) // In case date can not be parsed
-            }
-        }
+        logs = newLogs.sortedByDescending { it.date }
         notifyDataSetChanged()
     }
 

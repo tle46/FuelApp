@@ -206,7 +206,7 @@ class AddFuelLogFragment : Fragment() {
         btnAddFuel.setOnClickListener {
             val fuelLog = FuelLog(
                 vehicleId = selectedVehicle,
-                date = dateField.text.toString(),
+                date = calendar.time,
                 pricePerGallon = priceField.text.toString().toDoubleOrNull() ?: 0.0,
                 gallons = gallonsField.text.toString().toDoubleOrNull() ?: 0.0,
                 totalCost = totalCostField.text.toString().toDoubleOrNull() ?: 0.0,

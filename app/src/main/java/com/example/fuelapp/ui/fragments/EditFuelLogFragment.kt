@@ -117,7 +117,8 @@ class EditFuelLogFragment : Fragment() {
     }
 
     private fun populateFields() {
-        dateField.setText(fuelLog.date)
+        val formatter = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
+        dateField.setText(formatter.format(fuelLog.date))
         priceField.setText(fuelLog.pricePerGallon.toString())
         gallonsField.setText(fuelLog.gallons.toString())
         totalCostField.setText(fuelLog.totalCost.toString())
@@ -260,15 +261,23 @@ class EditFuelLogFragment : Fragment() {
     }
 
     private fun updateFuelLog(): Boolean {
-        val date = dateField.text.toString()
+        val formatter = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
+        val dateStr = dateField.text.toString()
         val price = priceField.text.toString().toDoubleOrNull()
         val gallons = gallonsField.text.toString().toDoubleOrNull()
         val total = totalCostField.text.toString().toDoubleOrNull()
         val odometer = odometerField.text.toString().replace(" ", "").toIntOrNull()
         val fillPercent = seekBar.progress
 
-        if (date.isBlank() || price == null || gallons == null || total == null || odometer == null) {
+        if (dateStr.isBlank() || price == null || gallons == null || total == null || odometer == null) {
             Toast.makeText(requireContext(), "Please fill all fields correctly", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        val date: Date = try {
+            formatter.parse(dateStr)!!
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show()
             return false
         }
 
