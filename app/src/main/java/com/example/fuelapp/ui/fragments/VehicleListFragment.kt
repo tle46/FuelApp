@@ -187,24 +187,27 @@ class VehicleListFragment : Fragment() {
             .get()
             .addOnSuccessListener { documents ->
 
+                if (documents.isEmpty) return@addOnSuccessListener
+
+                // Sort logs by odometer
+                val sortedDocs = documents.sortedBy { it.getDouble("odometer") ?: 0.0 }
+
                 var totalFuel = 0.0
                 var totalCost = 0.0
-                var minOdo = Double.MAX_VALUE
-                var maxOdo = 0.0
+                var totalMiles = 0.0
 
-                for (doc in documents) {
-                    val gallons = doc.getDouble("gallons") ?: 0.0
-                    val cost = doc.getDouble("totalCost") ?: 0.0
-                    val odo = doc.getDouble("odometer") ?: 0.0
+                // Start from the second log for MPG calculation
+                for (i in 1 until sortedDocs.size) {
+                    val prevOdo = sortedDocs[i - 1].getDouble("odometer") ?: 0.0
+                    val currOdo = sortedDocs[i].getDouble("odometer") ?: 0.0
+                    val gallons = sortedDocs[i].getDouble("gallons") ?: 0.0
+                    val cost = sortedDocs[i].getDouble("totalCost") ?: 0.0
 
+                    totalMiles += (currOdo - prevOdo)
                     totalFuel += gallons
                     totalCost += cost
-
-                    if (odo < minOdo) minOdo = odo
-                    if (odo > maxOdo) maxOdo = odo
                 }
 
-                val totalMiles = if (maxOdo > minOdo) maxOdo - minOdo else 0.0
                 val avgMpg = if (totalFuel > 0) totalMiles / totalFuel else 0.0
 
                 txtTotalMPG.text = getString(R.string.mpg_format, avgMpg)
