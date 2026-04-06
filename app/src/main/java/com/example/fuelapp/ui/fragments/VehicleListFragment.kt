@@ -15,6 +15,7 @@ import android.content.Intent
 import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import com.example.fuelapp.LoginActivity
+import com.example.fuelapp.model.FuelLog
 import com.example.fuelapp.viewmodel.FuelListViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.github.mikephil.charting.charts.LineChart
@@ -75,6 +76,54 @@ class VehicleListFragment : Fragment() {
         txtLastMPG = view.findViewById(R.id.txtLastMPG)
         chartOdometerTime = view.findViewById(R.id.chartOdometerTime)
         chartMPGOdometer = view.findViewById(R.id.chartMPGOdometer)
+
+        // SEED todo: REMOVE LATER. THIS IS FOR TESTING AND DEMO ONLY
+        fun seedFuelLogs(vehicleId: String, logCount: Int) {
+            val calendar = Calendar.getInstance()
+            var lastOdometer = 0
+            for (i in 1..logCount) {
+                val daysBetween = (2..10).random()
+                calendar.add(Calendar.DAY_OF_MONTH, daysBetween)
+                val mpg = (20..40).random().toDouble()
+                val gallons = (8..15).random().toDouble()
+                val milesDriven = (mpg * gallons).toInt()
+                lastOdometer += milesDriven
+                val pricePerGallon = 2 + Math.random() * 4
+
+                val fuelLog = FuelLog(
+                    vehicleId = vehicleId,
+                    date = calendar.time,
+                    pricePerGallon = String.format("%.2f", pricePerGallon).toDouble(),
+                    gallons = String.format("%.2f", gallons).toDouble(),
+                    totalCost = String.format("%.2f", pricePerGallon * gallons).toDouble(),
+                    odometer = lastOdometer,
+                    fillPercent = 100
+                )
+                fuelViewModel.addFuelLog(fuelLog)
+            }
+        }
+        // SEED todo: REMOVE LATER. THIS IS FOR TESTING AND DEMO ONLY
+        fun seedData() {
+            for (i in 1..3) {
+                val vehicle = Vehicle(
+                    name = "Vehicle $i",
+                    year = 2010 + i,
+                    make = "Make",
+                    model = "Model"
+                )
+
+                val success = viewModel.addVehicle(vehicle)
+                if (success) {
+                    seedFuelLogs(vehicle.id, 20)
+                }
+            }
+        }
+        // SEED todo: REMOVE LATER. THIS IS FOR TESTING AND DEMO ONLY
+        val btnSeedData: Button = view.findViewById(R.id.btnSeedData)
+        btnSeedData.setOnClickListener {
+            seedData()
+            Toast.makeText(requireContext(), "Data seeded!", Toast.LENGTH_SHORT).show()
+        }
 
         // Logout button
         logoutButton.setOnClickListener {
