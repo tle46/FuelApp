@@ -80,18 +80,29 @@ class FuelLogRepository {
         fuelLogCollection.document(id).delete()
     }
 
-    fun clearByVehicleId(vehicleId: String) {
-        val userId = AuthManager.getUserId() ?: return
+    fun clearByVehicleId(vehicleId: String, onComplete: () -> Unit) {
+        val userId = AuthManager.getUserId() ?: return onComplete()
 
         fuelLogCollection
             .whereEqualTo("userId", userId)
             .whereEqualTo("vehicleId", vehicleId)
             .get()
             .addOnSuccessListener { result ->
-                for (doc in result.documents) {
-                    doc.reference.delete()
+                if (result.isEmpty) {
+                    onComplete()
+                    return@addOnSuccessListener
                 }
+
+                val batch = db.batch()
+                for (doc in result.documents) {
+                    batch.delete(doc.reference)
+                }
+
+                batch.commit()
+                    .addOnSuccessListener { onComplete() }
+                    .addOnFailureListener { onComplete() }
             }
+            .addOnFailureListener { onComplete() }
     }
 
     fun clearByUserId(userId: String) {

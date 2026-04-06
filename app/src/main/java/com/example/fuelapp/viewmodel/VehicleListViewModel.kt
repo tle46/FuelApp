@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fuelapp.model.Vehicle
 import com.example.fuelapp.data.VehicleRepository
+import com.example.fuelapp.viewmodel.FuelListViewModel
 
 class VehicleListViewModel : ViewModel() {
 
@@ -37,16 +38,12 @@ class VehicleListViewModel : ViewModel() {
         return true
     }
 
-    fun deleteVehicle(vehicle: Vehicle): Boolean {
-        repository.deleteVehicle(vehicle)
-        loadVehicles()
-
-        if (_selectedVehicle.value?.id == vehicle.id) {
-            _selectedVehicle.value = null
-            // UI can handle selected vehicle being null
+    fun deleteVehicle(vehicle: Vehicle, onComplete: (Boolean) -> Unit) {
+        repository.deleteVehicle(vehicle) { success ->
+            if (success) loadVehicles()
+            if (_selectedVehicle.value?.id == vehicle.id) _selectedVehicle.value = null
+            onComplete(success)
         }
-
-        return true
     }
 
     fun selectVehicle(vehicle: Vehicle) {

@@ -52,10 +52,11 @@ class FuelListViewModel : ViewModel() {
         loadFuelLogs()
     }
 
-    // Not used yet
     fun clearLogsByVehicle(vehicleId: String) {
-        repository.clearByVehicleId(vehicleId)
-        loadFuelLogs()
+        repository.clearByVehicleId(vehicleId) {
+            // Reload logs only after deletion completes
+            loadFuelLogs()
+        }
     }
 
     // Not used yet
@@ -73,7 +74,7 @@ class FuelListViewModel : ViewModel() {
         }
     }
 
-    private fun loadFuelLogs() {
+    fun loadFuelLogs() {
         repository.getFuelLogs() { logs ->
             _fuelLogs.postValue(logs)
         }

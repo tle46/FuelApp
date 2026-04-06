@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.fuelapp.MainActivity
 import com.example.fuelapp.R
@@ -38,9 +39,9 @@ class AddVehicleFragment : Fragment() {
         val makeField = view.findViewById<EditText>(R.id.etMake)
         val modelField = view.findViewById<EditText>(R.id.etModel)
 
-        val btnAddFuel: Button = view.findViewById(R.id.btnSaveVehicle)
+        val btnSave: Button = view.findViewById(R.id.btnSaveVehicle)
 
-        btnAddFuel.setOnClickListener {
+        btnSave.setOnClickListener {
 
             val name = nameField.text.toString()
             val make = makeField.text.toString()
@@ -58,6 +59,11 @@ class AddVehicleFragment : Fragment() {
 
             if (success) {
                 (activity as MainActivity).switchFragment(VehicleListFragment())
+            } else {
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Error Adding Vehicle")
+                    .setPositiveButton("OK", null)
+                    .show()
             }
         }
 

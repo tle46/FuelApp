@@ -15,11 +15,14 @@ import android.content.Intent
 import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import com.example.fuelapp.LoginActivity
+import com.example.fuelapp.viewmodel.FuelListViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 class VehicleListFragment : Fragment() {
 
     private val viewModel: VehicleListViewModel by activityViewModels()
+
+    private val fuelViewModel: FuelListViewModel by activityViewModels()
 
     private lateinit var spinnerVehicle: Spinner
     private lateinit var etVehicleName: TextInputEditText
@@ -93,15 +96,13 @@ class VehicleListFragment : Fragment() {
 
         // Delete button
         btnDeleteVehicle.setOnClickListener {
-            var success = false
             viewModel.selectedVehicle.value?.let { vehicle ->
-                success = viewModel.deleteVehicle(vehicle)
+                viewModel.deleteVehicle(vehicle) { success ->
+                    if (success) {
+                        fuelViewModel.clearLogsByVehicle(vehicle.id)
+                    }
+                }
             }
-
-            androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle(if (success) "Success" else "Error")
-                .setPositiveButton("OK", null)
-                .show()
         }
 
         // Observe vehicles list and update the spinner
