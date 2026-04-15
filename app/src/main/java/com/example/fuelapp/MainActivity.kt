@@ -35,11 +35,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Initialize default fragment
-        bottomNav.selectedItemId = R.id.nav_dashboard
+        if (savedInstanceState == null) {
+            bottomNav.selectedItemId = R.id.nav_dashboard
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, VehicleListFragment())
-            .commit()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, VehicleListFragment())
+                .commit()
+        }
 
         //Handle navigation
         bottomNav.setOnItemSelectedListener { item ->
