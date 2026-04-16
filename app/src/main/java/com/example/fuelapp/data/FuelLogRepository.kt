@@ -45,7 +45,6 @@ class FuelLogRepository {
         fuelLogCollection
             .whereEqualTo("userId", userId)
             .whereEqualTo("vehicleId", vehicleId)
-            .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 val logs = result.documents.mapNotNull { doc ->

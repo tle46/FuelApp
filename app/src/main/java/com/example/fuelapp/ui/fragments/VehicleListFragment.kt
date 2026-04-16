@@ -10,14 +10,12 @@ import androidx.fragment.app.activityViewModels
 import com.example.fuelapp.model.Vehicle
 import com.example.fuelapp.R
 import com.example.fuelapp.viewmodel.VehicleListViewModel
+import com.example.fuelapp.viewmodel.FuelListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import android.content.Intent
-import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import com.example.fuelapp.LoginActivity
 import com.example.fuelapp.model.FuelLog
-import com.example.fuelapp.viewmodel.FuelListViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -76,6 +74,9 @@ class VehicleListFragment : Fragment() {
         txtLastMPG = view.findViewById(R.id.txtLastMPG)
         chartOdometerTime = view.findViewById(R.id.chartOdometerTime)
         chartMPGOdometer = view.findViewById(R.id.chartMPGOdometer)
+
+        styleLineChart(chartOdometerTime, "Odometer Over Time")
+        styleLineChart(chartMPGOdometer, "MPG vs Odometer")
 
         // SEED todo: REMOVE LATER. THIS IS FOR TESTING AND DEMO ONLY
         fun seedFuelLogs(vehicleId: String, logCount: Int) {
@@ -183,10 +184,9 @@ class VehicleListFragment : Fragment() {
             updateFormUI(vehicle)
 
             if (vehicle != null) {
-                loadStats(vehicle.id)
+                viewModel.loadStats(vehicle.id)
             }
         }
-
 
         spinnerVehicle.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -204,6 +204,49 @@ class VehicleListFragment : Fragment() {
                 // handle the case where there are no vehicles yet
                 // it works currently so maybe not needed
             }
+        }
+
+        viewModel.stats.observe(viewLifecycleOwner) { stats ->
+
+            txtTotalMPG.text = getString(R.string.mpg_format, stats.avgMpg)
+            txtTotalFuelCost.text = getString(R.string.fuel_cost_format, stats.totalCost)
+            txtTotalGallonsLogs.text = getString(R.string.gallons_format, stats.totalFuel)
+            txtTotalMiles.text = getString(R.string.miles_format, stats.totalMiles)
+            txtTotalFuelLogs.text = stats.totalLogs.toString()
+            txtLastMPG.text = getString(R.string.mpg_format, stats.lastMpg)
+
+            val odometerEntries = stats.odometerTimeData.map {
+                Entry(it.first.toFloat(), it.second)
+            }
+
+            val mpgEntries = stats.mpgOdometerData.map {
+                Entry(it.first, it.second)
+            }
+
+            val dateFormatter = object : ValueFormatter() {
+                private val sdf = SimpleDateFormat("MMM d", Locale.getDefault())
+                override fun getFormattedValue(value: Float): String {
+                    return sdf.format(Date(value.toLong()))
+                }
+            }
+
+            chartOdometerTime.xAxis.valueFormatter = dateFormatter
+
+            val odometerDataSet = createLineDataSet(
+                odometerEntries,
+                "Odometer",
+                android.graphics.Color.BLUE
+            )
+            chartOdometerTime.data = LineData(odometerDataSet)
+            chartOdometerTime.invalidate()
+
+            val mpgDataSet = createLineDataSet(
+                mpgEntries,
+                "MPG",
+                android.graphics.Color.GREEN
+            )
+            chartMPGOdometer.data = LineData(mpgDataSet)
+            chartMPGOdometer.invalidate()
         }
 
         return view
@@ -262,93 +305,20 @@ class VehicleListFragment : Fragment() {
         }
     }
 
-    private fun loadStats(vehicleId: String) {
-        val db = FirebaseFirestore.getInstance()
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-        db.collection("fuelLogs")
-            .whereEqualTo("vehicleId", vehicleId)
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { documents ->
-
-                if (documents.isEmpty) return@addOnSuccessListener
-
-                // Sort logs by odometer
-                val sortedDocs = documents.sortedBy { it.getDouble("odometer") ?: 0.0 }
-
-                var totalFuel = 0.0
-                var totalCost = 0.0
-                var totalMiles = 0.0
-
-                // Prepare chart data lists
-                val odometerTimeEntries = mutableListOf<Entry>()
-                val mpgOdometerEntries = mutableListOf<Entry>()
-
-                val dateFormat = SimpleDateFormat("MM/dd", Locale.getDefault())
-
-                if (sortedDocs.size > 1) {
-                    val lastOdo = sortedDocs[sortedDocs.size - 1].getDouble("odometer") ?: 0.0
-                    val prevOdo = sortedDocs[sortedDocs.size - 2].getDouble("odometer") ?: 0.0
-                    val lastGallons = sortedDocs[sortedDocs.size - 1].getDouble("gallons") ?: 0.0
-                    val lastMPG = if (lastGallons > 0) (lastOdo - prevOdo) / lastGallons else 0.0
-                    txtLastMPG.text = getString(R.string.mpg_format, lastMPG)
-                }
-
-                for ((i, doc) in sortedDocs.withIndex()) {
-                    val odo = doc.getDouble("odometer")?.toFloat() ?: 0f
-                    val gallons = doc.getDouble("gallons")?.toFloat() ?: 0f
-                    val cost = doc.getDouble("totalCost")?.toFloat() ?: 0f
-                    val timestamp = doc.getTimestamp("date")?.toDate()?.time?.toFloat() ?: 0f
-
-                    // Odometer vs Time
-                    odometerTimeEntries.add(Entry(timestamp, odo))
-
-                    // MPG vs Odometer (skip first log)
-                    if (i > 0) {
-                        val prevOdo = sortedDocs[i - 1].getDouble("odometer")?.toFloat() ?: 0f
-                        val prevGallons = sortedDocs[i].getDouble("gallons")?.toFloat() ?: 0f
-                        if (prevGallons > 0f) {
-                            val mpg = (odo - prevOdo) / prevGallons
-                            mpgOdometerEntries.add(Entry(odo, mpg))
-                        }
-
-                        totalMiles += (odo - prevOdo)
-                        totalFuel += gallons
-                        totalCost += cost
-                    }
-                }
-
-                // Calculate average MPG
-                val avgMpg = if (totalFuel > 0) totalMiles / totalFuel else 0.0
-
-                txtTotalMPG.text = getString(R.string.mpg_format, avgMpg)
-                txtTotalFuelCost.text = getString(R.string.fuel_cost_format, totalCost)
-                txtTotalGallonsLogs.text = getString(R.string.gallons_format, totalFuel)
-                txtTotalMiles.text = getString(R.string.miles_format, totalMiles)
-                txtTotalFuelLogs.text = documents.size().toString()
-
-                // --- Odometer vs Time Chart ---
-                styleLineChart(chartOdometerTime, "Odometer over Time")
-                chartOdometerTime.axisLeft.spaceBottom = 0f
-                val odometerDataSet = createLineDataSet(odometerTimeEntries, "Odometer", android.graphics.Color.BLUE)
-                chartOdometerTime.data = LineData(odometerDataSet)
-                chartOdometerTime.xAxis.valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        return dateFormat.format(Date(value.toLong()))
-                    }
-                }
-                chartOdometerTime.invalidate()
-
-                // --- MPG vs Odometer Chart ---
-                styleLineChart(chartMPGOdometer, "MPG vs Odometer")
-                val mpgDataSet = createLineDataSet(mpgOdometerEntries, "MPG", android.graphics.Color.parseColor("#4CAF50")) // modern green
-                chartMPGOdometer.data = LineData(mpgDataSet)
-                chartMPGOdometer.invalidate()
-            }
+    fun createLineDataSet(entries: List<Entry>, label: String, lineColor: Int): LineDataSet {
+        return LineDataSet(entries, label).apply {
+            color = lineColor
+            setDrawCircles(true)
+            circleRadius = 4f
+            circleHoleRadius = 2f
+            setDrawValues(false)
+            lineWidth = 2.5f
+            mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+            highLightColor = android.graphics.Color.RED
+        }
     }
 
-    fun styleLineChart(chart: LineChart, description: String) {
+    private fun styleLineChart(chart: LineChart, description: String) {
         chart.apply {
             setTouchEnabled(true)
             setPinchZoom(true)
@@ -381,19 +351,6 @@ class VehicleListFragment : Fragment() {
             chart.axisLeft.apply {
                 setLabelCount(4, true)
             }
-        }
-    }
-
-    fun createLineDataSet(entries: List<Entry>, label: String, lineColor: Int): LineDataSet {
-        return LineDataSet(entries, label).apply {
-            color = lineColor
-            setDrawCircles(true)
-            circleRadius = 4f
-            circleHoleRadius = 2f
-            setDrawValues(false)
-            lineWidth = 2.5f
-            mode = LineDataSet.Mode.HORIZONTAL_BEZIER  // smooth curves
-            highLightColor = android.graphics.Color.RED
         }
     }
 }

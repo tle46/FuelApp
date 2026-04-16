@@ -3,35 +3,132 @@ package com.example.fuelapp.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fuelapp.model.Vehicle
+import com.example.fuelapp.data.FuelLogRepository
 import com.example.fuelapp.data.VehicleRepository
-import com.example.fuelapp.viewmodel.FuelListViewModel
+import com.example.fuelapp.model.Vehicle
+import com.example.fuelapp.model.VehicleStats
 
 class VehicleListViewModel : ViewModel() {
 
+    private val repository = VehicleRepository()
+    private val fuelRepository = FuelLogRepository()
+
     private val _vehicles = MutableLiveData<List<Vehicle>>(emptyList())
     val vehicles: LiveData<List<Vehicle>> = _vehicles
-    private val repository = VehicleRepository()
+
     private val _selectedVehicle = MutableLiveData<Vehicle?>()
     val selectedVehicle: LiveData<Vehicle?> = _selectedVehicle
 
+    private val _stats = MutableLiveData<VehicleStats>()
+    val stats: LiveData<VehicleStats> = _stats
+
     init {
-        // Update vehicles list from db
         loadVehicles()
     }
+
+    private fun emptyStats() = VehicleStats(
+        avgMpg = 0.0,
+        totalMiles = 0.0,
+        totalFuel = 0.0,
+        totalCost = 0.0,
+        totalLogs = 0,
+        lastMpg = 0.0,
+        odometerTimeData = emptyList(),
+        mpgOdometerData = emptyList()
+    )
 
     private fun loadVehicles() {
         repository.getVehicles { vehicleList ->
             _vehicles.postValue(vehicleList)
+
+            if (vehicleList.isEmpty()) {
+                _selectedVehicle.postValue(null)
+                _stats.postValue(emptyStats())
+            }
+        }
+    }
+
+    fun loadStats(vehicleId: String) {
+
+        fuelRepository.getFuelLogsByVehicle(vehicleId) { logs ->
+
+            val sortedLogs = logs.sortedBy { it.odometer }
+
+            if (sortedLogs.isEmpty()) {
+                _stats.postValue(emptyStats())
+                return@getFuelLogsByVehicle
+            }
+
+            var totalFuel = 0.0
+            var totalCost = 0.0
+            var totalMiles = 0.0
+            var lastMPG = 0.0
+
+            val odometerTimeData = mutableListOf<Pair<Long, Float>>()
+            val mpgOdometerData = mutableListOf<Pair<Float, Float>>()
+
+            for (i in sortedLogs.indices) {
+
+                val log = sortedLogs[i]
+
+                val odo = log.odometer.toFloat()
+                val gallons = log.gallons.toFloat()
+                val cost = log.totalCost.toFloat()
+
+                // ✅ FIX: keep time as Long (epoch millis)
+                val timestamp = log.date.time
+
+                odometerTimeData.add(Pair(timestamp, odo))
+
+                if (i > 0) {
+                    val prev = sortedLogs[i - 1]
+
+                    val miles = (log.odometer - prev.odometer).toFloat()
+
+                    totalMiles += miles
+                    totalFuel += gallons
+                    totalCost += cost
+
+                    if (gallons > 0f) {
+                        val mpg = miles / gallons
+                        mpgOdometerData.add(Pair(odo, mpg))
+                    }
+                }
+            }
+
+            if (sortedLogs.size >= 2) {
+                val last = sortedLogs.last()
+                val prev = sortedLogs[sortedLogs.size - 2]
+
+                lastMPG = if (last.gallons > 0)
+                    (last.odometer - prev.odometer) / last.gallons
+                else 0.0
+            }
+
+            val avgMpg = if (totalFuel > 0)
+                totalMiles / totalFuel
+            else 0.0
+
+            _stats.postValue(
+                VehicleStats(
+                    avgMpg = avgMpg,
+                    totalMiles = totalMiles,
+                    totalFuel = totalFuel,
+                    totalCost = totalCost,
+                    totalLogs = sortedLogs.size,
+                    lastMpg = lastMPG,
+                    odometerTimeData = odometerTimeData,
+                    mpgOdometerData = mpgOdometerData
+                )
+            )
         }
     }
 
     fun updateVehicle(updatedVehicle: Vehicle): Boolean {
-        // Return false if fields are blank
         if (updatedVehicle.name.isBlank()
             || updatedVehicle.make.isBlank()
-            || updatedVehicle.model.isBlank())
-            return false
+            || updatedVehicle.model.isBlank()
+        ) return false
 
         repository.updateVehicle(updatedVehicle)
         loadVehicles()
@@ -39,9 +136,16 @@ class VehicleListViewModel : ViewModel() {
     }
 
     fun deleteVehicle(vehicle: Vehicle, onComplete: (Boolean) -> Unit) {
+
         repository.deleteVehicle(vehicle) { success ->
+
             if (success) loadVehicles()
-            if (_selectedVehicle.value?.id == vehicle.id) _selectedVehicle.value = null
+
+            if (_selectedVehicle.value?.id == vehicle.id) {
+                _selectedVehicle.postValue(null)
+                _stats.postValue(emptyStats())
+            }
+
             onComplete(success)
         }
     }
@@ -55,12 +159,10 @@ class VehicleListViewModel : ViewModel() {
     }
 
     fun addVehicle(vehicle: Vehicle): Boolean {
-
         if (vehicle.name.isBlank()
             || vehicle.make.isBlank()
-            || vehicle.model.isBlank()) {
-            return false
-        }
+            || vehicle.model.isBlank()
+        ) return false
 
         repository.addVehicle(vehicle)
         loadVehicles()
