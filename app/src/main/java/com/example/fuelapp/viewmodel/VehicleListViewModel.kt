@@ -75,7 +75,6 @@ class VehicleListViewModel : ViewModel() {
                 val gallons = log.gallons.toFloat()
                 val cost = log.totalCost.toFloat()
 
-                // ✅ FIX: keep time as Long (epoch millis)
                 val timestamp = log.date.time
 
                 odometerTimeData.add(Pair(timestamp, odo))
