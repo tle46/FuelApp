@@ -18,6 +18,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.concurrent.Executors
+import com.example.fuelapp.util.FuelParser
 
 class ScanActivity : AppCompatActivity() {
 
@@ -84,7 +85,7 @@ class ScanActivity : AppCompatActivity() {
 
             // Build preview and set provider to previewView
             val preview = Preview.Builder().build()
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            preview.surfaceProvider = previewView.surfaceProvider
 
             // Analyzer to process frames from camera
             val analyzer = ImageAnalysis.Builder()
@@ -173,7 +174,7 @@ class ScanActivity : AppCompatActivity() {
                 // Parse fuel data
                 val text = visionText.text
                 Log.d("ScanActivity", "Text: $text")
-                val result = parseFuelData(visionText.text)
+                val result = FuelParser.parse(visionText.text)
                 if (result.first != null && result.second != null) {
                     val result = Pair(result.first!!, result.second!!)
 
@@ -205,101 +206,6 @@ class ScanActivity : AppCompatActivity() {
                 isProcessing = false
                 imageProxy.close()
             }
-    }
-
-    private fun parseFuelData(text: String): Pair<Double?, Double?> {
-
-        data class Match(val value: String, val index: Int, val priority: Int)
-
-        val priceRegexes = listOf(
-            """(?<!\d)\d+\.\d{2}(?!\d)""".toRegex(), // highest priority
-            """(?<!\d)\d{4}(?!\d)""".toRegex(),
-            """(?<!\d)\d{5}(?!\d)""".toRegex(),
-            """(?<!\d)\d{3}(?!\d)""".toRegex()
-        )
-
-        val fuelRegexes = listOf(
-            """(?<!\d)\d+\.\d{3}(?!\d)""".toRegex(), // highest priority
-            """(?<!\d)\d{5}(?!\d)""".toRegex(),
-            """(?<!\d)\d{4}(?!\d)""".toRegex()
-        )
-
-        // List all candidates and sort by priority
-        val priceCandidates = priceRegexes.flatMapIndexed { priority, regex ->
-            regex.findAll(text).map { Match(it.value, it.range.first, priority) }
-        }.sortedWith(compareBy<Match> { it.priority })
-
-        val fuelCandidates = fuelRegexes.flatMapIndexed { priority, regex ->
-            regex.findAll(text).map { Match(it.value, it.range.first, priority) }
-        }.sortedWith(compareBy<Match> { it.priority })
-
-        var rawCost: String? = null
-        var rawFuel: String? = null
-
-        // See if any matches where price before fuel
-        for (p in priceCandidates) {
-            for (f in fuelCandidates) {
-                if (p.value != f.value && p.index < f.index) {
-                    rawCost = p.value
-                    rawFuel = f.value
-                    break
-                }
-            }
-            if (rawCost != null) break
-        }
-
-        // Pick any distinct pair if ordering failed
-        if (rawCost == null) {
-            for (p in priceCandidates) {
-                for (f in fuelCandidates) {
-                    if (p.value != f.value) {
-                        rawCost = p.value
-                        rawFuel = f.value
-                        break
-                    }
-                }
-                if (rawCost != null) break
-            }
-        }
-
-        if (rawCost == null || rawFuel == null) return Pair(null, null)
-
-        // Normalize decimals
-        if (!rawCost.contains(".")) {
-            rawCost = rawCost.dropLast(2) + "." + rawCost.takeLast(2)
-        }
-        if (!rawFuel.contains(".")) {
-            rawFuel = rawFuel.dropLast(3) + "." + rawFuel.takeLast(3)
-        }
-
-        val cost = rawCost.toDoubleOrNull()
-        val fuel = rawFuel.toDoubleOrNull()
-
-        Log.d("ScanActivity", "rawPrice: $cost, rawFuel: $fuel")
-
-        return if (isValid(Pair(cost, fuel))) Pair(cost, fuel) else Pair(null, null)
-    }
-
-    private fun isValid(result: Pair<Double?, Double?>): Boolean {
-        val (price, fuel) = result
-        if (price != null &&
-            fuel != null &&
-            price in 0.0..999.9 &&
-            fuel in 1.0..999.9 &&
-            price != fuel) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    private fun findFirstMatch(regexList: List<Regex>, text: String): String? {
-        for (regex in regexList) {
-            regex.find(text)?.value?.let {
-                return it
-            }
-        }
-        return null
     }
 
     // Maps ML Kit rect to PreviewView coordinates with rotation/scaling
