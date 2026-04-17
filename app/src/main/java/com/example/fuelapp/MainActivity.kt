@@ -11,6 +11,9 @@ import com.example.fuelapp.ui.fragments.VehicleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.content.Intent
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         bottomNav = findViewById(R.id.bottomNavigationView)
+
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setLocalCacheSettings(
+                PersistentCacheSettings.newBuilder().build()
+            )
+            .build()
+        
+        FirebaseFirestore.getInstance().firestoreSettings = settings
 
         //Check if user is logged in
         val user = FirebaseAuth.getInstance().currentUser

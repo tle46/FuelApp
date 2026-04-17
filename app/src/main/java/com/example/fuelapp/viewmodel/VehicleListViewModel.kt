@@ -37,18 +37,21 @@ class VehicleListViewModel : ViewModel() {
         mpgOdometerData = emptyList()
     )
 
+    private var hasLoaded = false
     private fun loadVehicles() {
+        if (hasLoaded) return
+        hasLoaded = true
+
         repository.getVehicles { vehicleList ->
             _vehicles.postValue(vehicleList)
-
-            if (vehicleList.isEmpty()) {
-                _selectedVehicle.postValue(null)
-                _stats.postValue(emptyStats())
-            }
         }
     }
 
+    private var lastVehicleId: String? = null
+
     fun loadStats(vehicleId: String) {
+        if (vehicleId == lastVehicleId) return
+        lastVehicleId = vehicleId
 
         fuelRepository.getFuelLogsByVehicle(vehicleId) { logs ->
 
@@ -68,20 +71,17 @@ class VehicleListViewModel : ViewModel() {
             val mpgOdometerData = mutableListOf<Pair<Float, Float>>()
 
             for (i in sortedLogs.indices) {
-
                 val log = sortedLogs[i]
 
                 val odo = log.odometer.toFloat()
                 val gallons = log.gallons.toFloat()
                 val cost = log.totalCost.toFloat()
-
                 val timestamp = log.date.time
 
                 odometerTimeData.add(Pair(timestamp, odo))
 
                 if (i > 0) {
                     val prev = sortedLogs[i - 1]
-
                     val miles = (log.odometer - prev.odometer).toFloat()
 
                     totalMiles += miles
@@ -110,51 +110,17 @@ class VehicleListViewModel : ViewModel() {
 
             _stats.postValue(
                 VehicleStats(
-                    avgMpg = avgMpg,
-                    totalMiles = totalMiles,
-                    totalFuel = totalFuel,
-                    totalCost = totalCost,
-                    totalLogs = sortedLogs.size,
-                    lastMpg = lastMPG,
-                    odometerTimeData = odometerTimeData,
-                    mpgOdometerData = mpgOdometerData
+                    avgMpg,
+                    totalMiles,
+                    totalFuel,
+                    totalCost,
+                    sortedLogs.size,
+                    lastMPG,
+                    odometerTimeData,
+                    mpgOdometerData
                 )
             )
         }
-    }
-
-    fun updateVehicle(updatedVehicle: Vehicle): Boolean {
-        if (updatedVehicle.name.isBlank()
-            || updatedVehicle.make.isBlank()
-            || updatedVehicle.model.isBlank()
-        ) return false
-
-        repository.updateVehicle(updatedVehicle)
-        loadVehicles()
-        return true
-    }
-
-    fun deleteVehicle(vehicle: Vehicle, onComplete: (Boolean) -> Unit) {
-
-        repository.deleteVehicle(vehicle) { success ->
-
-            if (success) loadVehicles()
-
-            if (_selectedVehicle.value?.id == vehicle.id) {
-                _selectedVehicle.postValue(null)
-                _stats.postValue(emptyStats())
-            }
-
-            onComplete(success)
-        }
-    }
-
-    fun selectVehicle(vehicle: Vehicle) {
-        _selectedVehicle.value = vehicle
-    }
-
-    fun setVehicles(vehicleList: List<Vehicle>) {
-        _vehicles.value = vehicleList
     }
 
     fun addVehicle(vehicle: Vehicle): Boolean {
@@ -164,7 +130,45 @@ class VehicleListViewModel : ViewModel() {
         ) return false
 
         repository.addVehicle(vehicle)
-        loadVehicles()
+
+        val updated = _vehicles.value.orEmpty().toMutableList()
+        updated.add(vehicle)
+        _vehicles.value = updated
+
         return true
+    }
+
+    fun updateVehicle(updatedVehicle: Vehicle): Boolean {
+        if (updatedVehicle.name.isBlank()
+            || updatedVehicle.make.isBlank()
+            || updatedVehicle.model.isBlank()
+        ) return false
+
+        repository.updateVehicle(updatedVehicle)
+
+        val updatedList = _vehicles.value.orEmpty().map {
+            if (it.id == updatedVehicle.id) updatedVehicle else it
+        }
+
+        _vehicles.value = updatedList
+        return true
+    }
+
+    fun deleteVehicle(vehicle: Vehicle, onComplete: (Boolean) -> Unit) {
+        repository.deleteVehicle(vehicle) { success ->
+
+            if (success) {
+                val updatedList = _vehicles.value.orEmpty().filter {
+                    it.id != vehicle.id
+                }
+                _vehicles.value = updatedList
+            }
+
+            onComplete(success)
+        }
+    }
+
+    fun selectVehicle(vehicle: Vehicle) {
+        _selectedVehicle.value = vehicle
     }
 }
