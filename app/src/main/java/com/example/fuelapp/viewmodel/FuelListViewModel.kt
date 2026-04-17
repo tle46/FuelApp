@@ -72,14 +72,9 @@ class FuelListViewModel : ViewModel() {
         }
     }
 
-    private var hasLoaded = false
-
     fun loadFuelLogs() {
-        if (hasLoaded) return
-        hasLoaded = true
-
-        repository.getFuelLogs {
-            _fuelLogs.postValue(it)
+        repository.getFuelLogs() { logs ->
+            _fuelLogs.postValue(logs)
         }
     }
 
