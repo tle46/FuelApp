@@ -173,19 +173,38 @@ class VehicleListFragment : Fragment() {
         // Initially hide update form fields
         updateFormUI(null)
 
-        // Observe vehicles list and update the spinner
+        // Recompute stats for whichever vehicle is currently selected, using the
+        // in-memory fuel log cache. Safe to call from any observer in any order —
+        // it just no-ops if no vehicle is selected yet.
+        fun recomputeStats() {
+            val vehicle = viewModel.selectedVehicle.value ?: return
+            val cachedLogs = fuelViewModel.getFuelLogsForVehicle(vehicle.id)
+            if (cachedLogs.isNotEmpty()) {
+                viewModel.loadStats(vehicle.id, cachedLogs)
+            } else {
+                // Fallback: fuel log cache not populated yet (cold-start race)
+                viewModel.loadStats(vehicle.id)
+            }
+        }
+
+        // Observe vehicles list — update the spinner, then recompute stats in case
+        // the vehicle list arrived after the fuel log cache (common on cold start)
         viewModel.vehicles.observe(viewLifecycleOwner) { list ->
             vehicleList = list
             updateSpinner()
+            recomputeStats()
         }
 
-        // Observe selected vehicle and update form
+        // Observe selected vehicle — update form fields and recompute stats
         viewModel.selectedVehicle.observe(viewLifecycleOwner) { vehicle ->
             updateFormUI(vehicle)
+            recomputeStats()
+        }
 
-            if (vehicle != null) {
-                viewModel.loadStats(vehicle.id)
-            }
+        // Observe fuel log cache — fires on initial load AND whenever a log is
+        // added/updated/deleted, so the graph always stays current
+        fuelViewModel.fuelLogs.observe(viewLifecycleOwner) {
+            recomputeStats()
         }
 
         spinnerVehicle.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
